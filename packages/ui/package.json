@@ -1,0 +1,39 @@
+{
+  "name": "@payflow/ui",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./button": "./src/button.tsx",
+    "./badge": "./src/badge.tsx",
+    "./dialog": "./src/dialog.tsx",
+    "./confirm-dangerous-action-dialog": "./src/confirm-dangerous-action-dialog.tsx",
+    "./transaction-state-badge": "./src/transaction-state-badge.tsx",
+    "./table": "./src/table.tsx",
+    "./card": "./src/card.tsx",
+    "./gateway-status": "./src/gateway-status.ts",
+    "./select": "./src/select.tsx",
+    "./pagination": "./src/pagination.tsx",
+    "./stat-tile": "./src/stat-tile.tsx",
+    "./chart-colors": "./src/chart-colors.ts",
+    "./utils": "./src/utils.ts",
+    "./tokens/base.css": "./src/tokens/base.css"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.4",
+    "@radix-ui/react-slot": "^1.1.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0",
+    "lucide-react": "^0.468.0"
+  },
+  "devDependencies": {
+    "@payflow/config-typescript": "workspace:*",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  }
+}
