@@ -1,0 +1,22 @@
+{
+  "name": "payflow-frontend",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:ops": "turbo run dev --filter=@payflow/ops",
+    "dev:portal": "turbo run dev --filter=@payflow/merchant-portal",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "api-client:generate": "turbo run generate --filter=@payflow/api-client"
+  },
+  "devDependencies": {
+    "turbo": "^2.10.13",
+    "typescript": "^5.9.3"
+  },
+  "packageManager": "pnpm@11.1.3",
+  "engines": {
+    "node": ">=20"
+  }
+}
