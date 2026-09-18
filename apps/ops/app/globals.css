@@ -1,0 +1,67 @@
+@import "tailwindcss";
+@import "@payflow/ui/tokens/base.css";
+
+/* Tailwind v4's automatic content scan does not follow into workspace
+ * packages symlinked via pnpm (it skips node_modules, symlinked or not) —
+ * so every utility class used only inside packages/ui/src (badge fills,
+ * button variants, dialog styling, ...) was silently never generated.
+ * This explicitly re-adds it as a scan root. */
+@source "../../../packages/ui/src";
+
+/* Ops: dark-mode-first, compact density (Part E) — dark palette is the
+ * default here, not gated behind prefers-color-scheme, since this app is
+ * dark-first by design rather than following the OS preference. Theme
+ * choice itself is still read from a cookie server-side to avoid a
+ * light->dark flash; that wiring lands with the theme toggle. */
+:root {
+  color-scheme: dark;
+  /* dataviz skill's validated dark chart chrome — page plane / chart surface
+   * are used as this app's background/card so the dashboard and its charts
+   * share one contrast-checked dark palette instead of two guessed ones. */
+  --background: #0d0d0d;
+  --foreground: #ffffff;
+  --border: #2c2c2a;
+  --card: #1a1a19;
+  --card-foreground: #ffffff;
+  --muted: #232322;
+  --muted-foreground: #c3c2b7;
+  --primary: #ffffff;
+  --primary-foreground: #0d0d0d;
+  --ring: #3987e5;
+
+  /* Status palette is mode-invariant per the skill — no override needed. */
+
+  /* Categorical series — dark steps (validated: worst adjacent CVD ΔE 8.4,
+   * worst adjacent normal-vision ΔE 19.3, all >= 3:1 on #1a1a19). */
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #008300;
+  --series-7: #9085e9;
+  --series-8: #e66767;
+
+  --chart-surface: #1a1a19;
+  --chart-page-plane: #0d0d0d;
+  --chart-ink-primary: #ffffff;
+  --chart-ink-secondary: #c3c2b7;
+  --chart-ink-muted: #898781;
+  --chart-gridline: #2c2c2a;
+  --chart-baseline: #383835;
+
+  --density-row-height: 2.25rem;
+  --density-cell-padding-x: 0.75rem;
+  --density-cell-padding-y: 0.375rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
