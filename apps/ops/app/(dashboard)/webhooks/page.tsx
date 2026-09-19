@@ -7,6 +7,7 @@ import { hasRole } from "@payflow/auth";
 import { GATEWAY_SERIES_INDEX } from "@payflow/ui/chart-colors";
 import { Select } from "@payflow/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@payflow/ui/table";
+import { LiveRegion } from "@payflow/ui/live-region";
 import { ReplayAction } from "./components/replay-action";
 
 const GATEWAYS = Object.keys(GATEWAY_SERIES_INDEX);
@@ -18,8 +19,28 @@ export default function WebhookDlqPage() {
   const { data: me } = useMe();
   const canAct = hasRole(me?.role, ["SUPER_ADMIN", "OPS_ADMIN"]);
 
+  const [announcement, setAnnouncement] = React.useState("");
+  const knownIds = React.useRef<Set<string> | null>(null);
+
+  React.useEffect(() => {
+    if (!entries) return;
+    const ids = new Set(entries.map((e) => e.id));
+    if (knownIds.current) {
+      const newCount = [...ids].filter((id) => !knownIds.current!.has(id)).length;
+      if (newCount > 0) {
+        setAnnouncement(
+          newCount === 1
+            ? "A new webhook landed in the dead-letter queue."
+            : `${newCount} new webhooks landed in the dead-letter queue.`,
+        );
+      }
+    }
+    knownIds.current = ids;
+  }, [entries]);
+
   return (
     <div className="flex flex-col gap-4">
+      <LiveRegion politeness="polite" message={announcement} />
       <div>
         <h1 className="text-lg font-semibold">Webhook DLQ</h1>
         <p className="text-sm text-muted-foreground">

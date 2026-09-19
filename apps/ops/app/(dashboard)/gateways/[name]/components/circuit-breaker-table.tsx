@@ -1,9 +1,11 @@
 "use client";
 
+import * as React from "react";
 import { useGatewayHealth } from "@payflow/api-client";
 import { Card, CardHeader, CardTitle } from "@payflow/ui/card";
 import { Badge } from "@payflow/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@payflow/ui/table";
+import { LiveRegion } from "@payflow/ui/live-region";
 
 const STATE_VARIANT: Record<string, "success" | "warning" | "danger"> = {
   CLOSED: "success",
@@ -13,12 +15,24 @@ const STATE_VARIANT: Record<string, "success" | "warning" | "danger"> = {
 
 export function CircuitBreakerTable({ name }: { name: string }) {
   const { data, isLoading } = useGatewayHealth(name);
+  const [announcement, setAnnouncement] = React.useState("");
+  const wasOpen = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!data) return;
+    const isOpen = data.circuitBreakerStates.some((s) => s.state === "OPEN");
+    if (isOpen && !wasOpen.current) {
+      setAnnouncement(`Circuit breaker opened for ${name} — requests are failing fast.`);
+    }
+    wasOpen.current = isOpen;
+  }, [data, name]);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Circuit breaker</CardTitle>
       </CardHeader>
+      <LiveRegion politeness="assertive" message={announcement} />
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : !data?.circuitBreakerStates.length ? (
