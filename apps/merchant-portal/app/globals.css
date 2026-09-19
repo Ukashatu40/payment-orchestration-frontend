@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@import "@payflow/ui/tokens/base.css";
+
+/* Tailwind v4's automatic content scan does not follow into workspace
+ * packages symlinked via pnpm (it skips node_modules, symlinked or not) —
+ * so every utility class used only inside packages/ui/src (badge fills,
+ * button variants, dialog styling, ...) was silently never generated.
+ * This explicitly re-adds it as a scan root. */
+@source "../../../packages/ui/src";
+
+/* Merchant portal: light-mode-first, comfortable density (Part E) — the
+ * opposite tone from ops on purpose. A self-serve tool used briefly should
+ * read as calm and trustworthy, not "control room". base.css's :root
+ * already sets the light palette as the default, so this block only adds
+ * the merchant-specific comfortable density and the light chart tokens
+ * (base.css's chart-* tokens default to values meant for a dark surface —
+ * these override them for a light one). */
+:root {
+  color-scheme: light;
+
+  --chart-surface: #fcfcfb;
+  --chart-page-plane: #f9f9f7;
+  --chart-ink-primary: #0b0b0b;
+  --chart-ink-secondary: #52514e;
+  --chart-ink-muted: #898781;
+  --chart-gridline: #e1e0d9;
+  --chart-baseline: #c3c2b7;
+
+  --density-row-height: 3rem;
+  --density-cell-padding-x: 1rem;
+  --density-cell-padding-y: 0.75rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
