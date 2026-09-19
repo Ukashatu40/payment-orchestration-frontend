@@ -12,10 +12,10 @@ import type { NextRequest } from "next/server";
  * `/api/backend/v1/...`) would change the relayed cookie's effective Path
  * and break the refresh flow.
  *
- * The backend's `Set-Cookie` response headers are relayed to the browser
- * untouched by returning the fetch Response directly rather than
- * reconstructing one — reconstructing risks collapsing multiple `Set-Cookie`
- * headers (access + refresh token, set together on login) into one.
+ * The backend's `Set-Cookie` response headers are relayed individually
+ * (via getSetCookie) — a naive header copy risks collapsing multiple
+ * `Set-Cookie` headers (access + refresh token, set together on login) into
+ * one.
  */
 const BACKEND_API_URL = process.env.BACKEND_API_URL;
 
@@ -35,7 +35,28 @@ async function proxy(request: NextRequest, { params }: { params: Promise<{ path:
   const proxyRequest = new Request(proxyURL, request);
 
   try {
-    return await fetch(proxyRequest);
+    const upstream = await fetch(proxyRequest);
+
+    // fetch() transparently decompresses the upstream body (Render gzips
+    // responses) but leaves Content-Encoding/Content-Length describing the
+    // COMPRESSED bytes; relaying those makes the browser try to decode an
+    // already-plain body (net::ERR_CONTENT_DECODING_FAILED). Drop them.
+    // Set-Cookie is copied one-by-one so access + refresh cookies both survive.
+    const headers = new Headers();
+    upstream.headers.forEach((value, key) => {
+      const k = key.toLowerCase();
+      if (k === "set-cookie" || k === "content-encoding" || k === "content-length") return;
+      headers.append(key, value);
+    });
+    for (const cookie of upstream.headers.getSetCookie()) {
+      headers.append("set-cookie", cookie);
+    }
+
+    return new Response(upstream.body, {
+      status: upstream.status,
+      statusText: upstream.statusText,
+      headers,
+    });
   } catch (reason) {
     const message = reason instanceof Error ? reason.message : "Backend unreachable";
     return new Response(message, { status: 502 });
