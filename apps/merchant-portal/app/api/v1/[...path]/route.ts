@@ -19,6 +19,10 @@ import type { NextRequest } from "next/server";
  */
 const BACKEND_API_URL = process.env.BACKEND_API_URL;
 
+// A sleeping free-tier backend (e.g. Render) needs ~1 minute to wake; the
+// default function timeout would fail the first request after idle.
+export const maxDuration = 60;
+
 async function proxy(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   if (!BACKEND_API_URL) {
     return new Response("BACKEND_API_URL is not configured", { status: 500 });
