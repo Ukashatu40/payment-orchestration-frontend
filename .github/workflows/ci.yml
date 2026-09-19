@@ -12,7 +12,7 @@ concurrency:
 env:
   # Backend repo's committed OpenAPI spec; override with a repo variable
   # (e.g. a staging /api/docs-json URL) if the backend moves or forks.
-  OPENAPI_SPEC: ${{ vars.OPENAPI_SPEC_URL || 'https://raw.githubusercontent.com/Ukashatu40/payflow-orchestration-engine/main/docs/api-specification.yaml' }}
+  OPENAPI_SPEC: ${{ vars.OPENAPI_SPEC_URL || 'https://raw.githubusercontent.com/Ukashatu40/payment-orchestration-engine/main/docs/api-specification.yaml' }}
 
 jobs:
   verify:
