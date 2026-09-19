@@ -2,7 +2,14 @@ export { createBrowserApiClient, createServerApiClient } from "./client";
 export type { paths } from "./generated/schema";
 export { ApiError, type ApiErrorBody } from "./error";
 export { ApiQueryClientProvider } from "./query-client-provider";
-export { useMe, useLogin, useLogout, meQueryKey } from "./hooks/use-session";
+export {
+  useMe,
+  useLogin,
+  useLogout,
+  useSessions,
+  useRevokeSession,
+  meQueryKey,
+} from "./hooks/use-session";
 export { useGateways } from "./hooks/use-gateways";
 export {
   useGatewayHealth,
@@ -27,11 +34,13 @@ export {
   useCreateUser,
   useUpdateUserRole,
   useUpdateUserStatus,
+  useResetUserPassword,
   type UsersListFilters,
   type CreateUserInput,
   type UpdateUserRoleInput,
 } from "./hooks/use-users";
 export { usePaymentsList, type PaymentsListFilters } from "./hooks/use-payments";
+export { useInitiatePayment, type InitiatePaymentInput } from "./hooks/use-initiate-payment";
 export {
   usePayment,
   useTimeline,

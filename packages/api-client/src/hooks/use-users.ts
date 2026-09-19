@@ -89,3 +89,16 @@ export function useUpdateUserStatus(id: string) {
     },
   });
 }
+
+/** Admin-initiated reset — also clears any accumulated login lockout. */
+export function useResetUserPassword(id: string) {
+  return useMutation({
+    mutationFn: async (password: string) => {
+      const { data } = await client.PUT("/api/v1/users/{id}/password", {
+        params: { path: { id } },
+        body: { password },
+      });
+      return data;
+    },
+  });
+}

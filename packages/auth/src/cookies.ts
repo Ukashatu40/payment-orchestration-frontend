@@ -19,3 +19,38 @@ export const REFRESH_TOKEN_COOKIE = "payflow_refresh_token";
 export function hasOptimisticSession(cookies: { get(name: string): { value: string } | undefined }): boolean {
   return Boolean(cookies.get(ACCESS_TOKEN_COOKIE)?.value);
 }
+
+/**
+ * Reads the `role` claim out of the access-token JWT's payload segment
+ * WITHOUT verifying its signature — base64url-decodes the middle segment
+ * only. This is still purely optimistic/for-routing-only, same caveat as
+ * hasOptimisticSession above: never treat this as proof of anything, the
+ * backend is the real authorization boundary.
+ *
+ * Needed because a single role's optimistic redirect isn't enough for an
+ * app that only serves one role (e.g. merchant-portal, MERCHANT_* only):
+ * without this, a SUPER_ADMIN's cookie reads as "logged in" by
+ * hasOptimisticSession, so proxy.ts would bounce them away from /login
+ * back to /overview — where the real (server-side, role-aware) session
+ * check then bounces them back to /login, forever. Decoding the role here
+ * lets proxy.ts recognize "logged in, but not for this app" and let /login
+ * render normally instead of looping.
+ */
+export function getOptimisticRole(cookies: {
+  get(name: string): { value: string } | undefined;
+}): string | null {
+  const token = cookies.get(ACCESS_TOKEN_COOKIE)?.value;
+  if (!token) return null;
+
+  const payloadSegment = token.split(".")[1];
+  if (!payloadSegment) return null;
+
+  try {
+    const base64 = payloadSegment.replace(/-/g, "+").replace(/_/g, "/");
+    const json = atob(base64);
+    const payload = JSON.parse(json) as { role?: unknown };
+    return typeof payload.role === "string" ? payload.role : null;
+  } catch {
+    return null;
+  }
+}

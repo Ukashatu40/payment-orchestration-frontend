@@ -90,6 +90,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/{id}/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Reset a user's password (admin-initiated) */
+        put: operations["UsersController_resetUserPassword_v1"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/login": {
         parameters: {
             query?: never;
@@ -717,6 +734,12 @@ export interface components {
             /** @enum {string} */
             status: "ACTIVE" | "DISABLED";
         };
+        ResetUserPasswordDto: {
+            password: string;
+        };
+        ResetUserPasswordResultDto: {
+            reset: boolean;
+        };
         LoginDto: {
             /** @example ops-admin@payflow.example */
             email: string;
@@ -742,6 +765,19 @@ export interface components {
             merchantId: string | null;
             /** Format: date-time */
             lastLoginAt: string | null;
+        };
+        SessionDto: {
+            /** Format: uuid */
+            id: string;
+            userAgent: string | null;
+            ip: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        RevokeSessionResultDto: {
+            revoked: boolean;
         };
         GatewaySummaryDto: {
             /** @enum {string} */
@@ -805,7 +841,21 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
-        InitiatePaymentRequestDto: Record<string, never>;
+        InitiatePaymentRequestDto: {
+            /** @description Your own order/reference ID — must be unique per merchant */
+            merchantOrderId: string;
+            /** @description Amount in minor units (e.g. paise, kobo) */
+            amountPaise: number;
+            /** @default INR */
+            currency: string;
+            /** @enum {string} */
+            paymentMethod: "CARD_CREDIT" | "CARD_DEBIT" | "UPI" | "NET_BANKING" | "WALLET" | "BANK_TRANSFER" | "USSD" | "MOBILE_MONEY" | "VIRTUAL_ACCOUNT";
+            metadata?: {
+                [key: string]: unknown;
+            };
+            /** @description Customer email — required by some gateways (e.g. Paystack, Flutterwave) to authorise a charge. Falls back to a merchant-scoped placeholder if omitted, which those gateways will reject. */
+            customerEmail?: string;
+        };
         PaymentResponseDto: {
             /** Format: uuid */
             id: string;
@@ -826,6 +876,8 @@ export interface components {
             gateway: "RAZORPAY" | "STRIPE" | "PAYU" | "UPI" | "PAYSTACK" | "FLUTTERWAVE" | "INTERSWITCH" | "OPAY" | null;
             gatewayPaymentId: string | null;
             gatewayReference: string | null;
+            /** @description Hosted checkout URL the payer must open to complete payment (redirect-based gateways such as Paystack/Flutterwave). Null otherwise. */
+            checkoutUrl: string | null;
             traceId: string;
             /** Format: date-time */
             createdAt: string;
@@ -1144,6 +1196,46 @@ export interface operations {
             };
         };
     };
+    UsersController_resetUserPassword_v1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResetUserPasswordDto"];
+            };
+        };
+        responses: {
+            /** @description Password reset */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetUserPasswordResultDto"];
+                };
+            };
+            /** @description Requires SUPER_ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     AuthController_login_v1: {
         parameters: {
             query?: never;
@@ -1241,7 +1333,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["SessionDto"][];
+                };
             };
         };
     };
@@ -1260,7 +1354,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["RevokeSessionResultDto"];
+                };
             };
         };
     };
@@ -1457,9 +1553,12 @@ export interface operations {
             header: {
                 /** @description UUID v4 idempotency key */
                 "idempotency-key": string;
-                "x-mock-response": string;
-                "x-mock-delay-ms": string;
-                "x-mock-gateway-down": string;
+                /** @description Test/scenario tooling only — forces a specific gateway mock response. */
+                "x-mock-response"?: string;
+                /** @description Test/scenario tooling only — simulates gateway latency. */
+                "x-mock-delay-ms"?: string;
+                /** @description Test/scenario tooling only — simulates the gateway being unavailable. */
+                "x-mock-gateway-down"?: string;
                 /** @description Merchant UUID — only honored for legacy API-key callers. Ignored for user-session (JWT) callers, whose merchant is derived from their session. */
                 "x-merchant-id"?: string;
             };
@@ -1477,7 +1576,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentResponseDto"];
+                };
             };
             /** @description Validation error */
             400: {

@@ -45,3 +45,31 @@ export function useLogout() {
     },
   });
 }
+
+export const sessionsQueryKey = ["auth", "sessions"] as const;
+
+export function useSessions() {
+  return useQuery({
+    queryKey: sessionsQueryKey,
+    queryFn: async () => {
+      const { data } = await client.GET("/api/v1/auth/sessions");
+      return data ?? [];
+    },
+  });
+}
+
+/** DELETE isn't subject to the IdempotencyKeyInterceptor (POST-only). */
+export function useRevokeSession() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await client.DELETE("/api/v1/auth/sessions/{id}", {
+        params: { path: { id } },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sessionsQueryKey });
+    },
+  });
+}
