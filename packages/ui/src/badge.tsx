@@ -3,7 +3,10 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "./utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+  // rounded-[var(--radius-badge)] — a fixed, small radius shared by both
+  // apps (not --radius, which is card/button-sized and reads as a full
+  // pill at badge height). See tokens/base.css.
+  "inline-flex items-center rounded-[var(--radius-badge)] border px-2.5 py-0.5 text-xs font-medium",
   {
     variants: {
       variant: {
