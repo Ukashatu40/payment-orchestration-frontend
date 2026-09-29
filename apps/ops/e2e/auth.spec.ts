@@ -6,7 +6,7 @@ import { expect, test } from "@playwright/test";
 test("logged-out visit to a dashboard route redirects to /login", async ({ page }) => {
   await page.goto("/overview");
   await expect(page).toHaveURL(/\/login/);
-  await expect(page.getByRole("heading", { name: "PayFlow Ops" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
 });
 
 test("submitting an empty login form shows validation errors", async ({ page }) => {

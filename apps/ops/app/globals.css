@@ -8,28 +8,36 @@
  * This explicitly re-adds it as a scan root. */
 @source "../../../packages/ui/src";
 
-/* Ops: dark-mode-first, compact density (Part E) — dark palette is the
- * default here, not gated behind prefers-color-scheme, since this app is
- * dark-first by design rather than following the OS preference. Theme
- * choice itself is still read from a cookie server-side to avoid a
- * light->dark flash; that wiring lands with the theme toggle. */
+/*
+ * Ops — "Switchboard": engineers watching 8 payment rails in real time need
+ * signal lamps, not dashboard cards. The identity is a blue-leaning ink
+ * (never neutral #0B0B0B) carrying two named accents with distinct jobs —
+ * signal-brass for actions/the active route, scope-cyan for data/links —
+ * held across BOTH modes so dark and light read as the same instrument,
+ * just lit differently. Compact density and a 2px radius throughout: this
+ * is a working console, not a marketing surface.
+ */
 :root {
-  color-scheme: dark;
-  /* dataviz skill's validated dark chart chrome — page plane / chart surface
-   * are used as this app's background/card so the dashboard and its charts
-   * share one contrast-checked dark palette instead of two guessed ones. */
-  --background: #0d0d0d;
-  --foreground: #ffffff;
-  --border: #2c2c2a;
-  --card: #1a1a19;
-  --card-foreground: #ffffff;
-  --muted: #232322;
-  --muted-foreground: #c3c2b7;
-  --primary: #ffffff;
-  --primary-foreground: #0d0d0d;
-  --ring: #3987e5;
+  --radius: 0.125rem;
+  --font-display: var(--font-space-grotesk);
+}
 
-  /* Status palette is mode-invariant per the skill — no override needed. */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #0a0e13;
+  --foreground: #e7ecf1;
+  --border: #232b34;
+  --card: #131920;
+  --card-foreground: #e7ecf1;
+  --muted: #182029;
+  --muted-foreground: #93a2ae;
+
+  --primary: #d98e2b; /* signal-brass */
+  --primary-foreground: #0a0e13;
+  --accent: #4fb2e0; /* scope-cyan */
+  --accent-foreground: #0a0e13;
+  --ring: #4fb2e0;
 
   /* Categorical series — dark steps (validated: worst adjacent CVD ΔE 8.4,
    * worst adjacent normal-vision ΔE 19.3, all >= 3:1 on #1a1a19). */
@@ -42,26 +50,64 @@
   --series-7: #9085e9;
   --series-8: #e66767;
 
-  --chart-surface: #1a1a19;
-  --chart-page-plane: #0d0d0d;
-  --chart-ink-primary: #ffffff;
-  --chart-ink-secondary: #c3c2b7;
-  --chart-ink-muted: #898781;
-  --chart-gridline: #2c2c2a;
-  --chart-baseline: #383835;
-
-  --density-row-height: 2.25rem;
-  --density-cell-padding-x: 0.75rem;
-  --density-cell-padding-y: 0.375rem;
+  --chart-surface: #131920;
+  --chart-page-plane: #0a0e13;
+  --chart-ink-primary: #e7ecf1;
+  --chart-ink-secondary: #93a2ae;
+  --chart-ink-muted: #5c6b76;
+  --chart-gridline: #232b34;
+  --chart-baseline: #2f3a44;
 }
 
-@theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Cool steel-grey, blue-leaning to match dark mode's ink hue — a "day
+   * shift" instrument panel, not a generic light SaaS surface. */
+  --background: #eef1f4;
+  --foreground: #10151a;
+  --border: #d3dae1;
+  --card: #ffffff;
+  --card-foreground: #10151a;
+  --muted: #e3e8ed;
+  --muted-foreground: #4e5b67;
+
+  /* Same hues as dark mode, deepened for contrast on a light panel. */
+  --primary: #b8721a;
+  --primary-foreground: #ffffff;
+  --accent: #1c7fa8;
+  --accent-foreground: #ffffff;
+  --ring: #1c7fa8;
+
+  --series-1: #2a78d6;
+  --series-2: #c1541f;
+  --series-3: #128058;
+  --series-4: #9c6a00;
+  --series-5: #b03e6b;
+  --series-6: #256b25;
+  --series-7: #5847b8;
+  --series-8: #c73f3f;
+
+  --chart-surface: #ffffff;
+  --chart-page-plane: #eef1f4;
+  --chart-ink-primary: #10151a;
+  --chart-ink-secondary: #4e5b67;
+  --chart-ink-muted: #7c8994;
+  --chart-gridline: #d3dae1;
+  --chart-baseline: #b7c0c8;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Every gateway/rail code, amount, timestamp and reference ID reads in
+ * mono — a real terminal's dominant voice. Apply explicitly, not globally,
+ * so buttons/labels/prose stay in the more legible sans. */
+.font-data {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
 }

@@ -2,6 +2,7 @@ import type * as React from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerApiClient } from "@payflow/api-client";
+import { THEME_COOKIE_NAME, resolveTheme } from "@payflow/ui/theme";
 import { DashboardSidebar } from "./dashboard-sidebar";
 
 /**
@@ -23,9 +24,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect("/login");
   }
 
+  const theme = resolveTheme(cookieStore.get(THEME_COOKIE_NAME)?.value, "dark");
+
   return (
     <div className="flex min-h-screen">
-      <DashboardSidebar email={me.email} role={me.role} />
+      <DashboardSidebar email={me.email} role={me.role} theme={theme} />
       <main className="flex-1 overflow-x-hidden p-6">{children}</main>
     </div>
   );

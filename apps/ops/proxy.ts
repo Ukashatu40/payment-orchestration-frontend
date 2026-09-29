@@ -70,5 +70,9 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  // icon/apple-icon: Next's generated-favicon routes (app/icon.tsx) — without
+  // this exclusion the auth redirect below intercepts them too, so a
+  // logged-out visitor's browser tab silently falls back to no icon /
+  // Next's own default instead of the app's generated one.
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|icon|apple-icon).*)"],
 };
