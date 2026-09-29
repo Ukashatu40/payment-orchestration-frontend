@@ -24,6 +24,20 @@ const PAYMENT_METHODS = [
   "VIRTUAL_ACCOUNT",
 ] as const;
 
+// Sentence case reads calmer than the raw enum ("CARD CREDIT"); acronyms
+// (UPI, USSD) stay as acronyms rather than being title-cased into nonsense.
+const PAYMENT_METHOD_LABEL: Record<(typeof PAYMENT_METHODS)[number], string> = {
+  CARD_CREDIT: "Credit card",
+  CARD_DEBIT: "Debit card",
+  UPI: "UPI",
+  NET_BANKING: "Net banking",
+  WALLET: "Wallet",
+  BANK_TRANSFER: "Bank transfer",
+  USSD: "USSD",
+  MOBILE_MONEY: "Mobile money",
+  VIRTUAL_ACCOUNT: "Virtual account",
+};
+
 const CURRENCIES = ["INR", "NGN", "USD"] as const;
 
 const paymentSchema = z.object({
@@ -151,7 +165,7 @@ export default function NewPaymentPage() {
             <Select id="paymentMethod" {...register("paymentMethod")}>
               {PAYMENT_METHODS.map((m) => (
                 <option key={m} value={m}>
-                  {m.replaceAll("_", " ")}
+                  {PAYMENT_METHOD_LABEL[m]}
                 </option>
               ))}
             </Select>

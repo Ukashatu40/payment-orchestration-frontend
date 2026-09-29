@@ -8,36 +8,85 @@
  * This explicitly re-adds it as a scan root. */
 @source "../../../packages/ui/src";
 
-/* Merchant portal: light-mode-first, comfortable density (Part E) — the
- * opposite tone from ops on purpose. A self-serve tool used briefly should
- * read as calm and trustworthy, not "control room". base.css's :root
- * already sets the light palette as the default, so this block only adds
- * the merchant-specific comfortable density and the light chart tokens
- * (base.css's chart-* tokens default to values meant for a dark surface —
- * these override them for a light one). */
+/*
+ * Merchant portal — "Manifest": a merchant wants a trustworthy paper trail
+ * that a payment was routed and settled, closer to a shipping manifest or
+ * bank passbook than a SaaS card. Real accounting ledgers were printed on
+ * pale green paper — that's the literal material reference, not the
+ * cream/terracotta default. Ink-green + a seal-gold "paid" stamp accent
+ * carry through both modes: light reads as paper under daylight, dark as
+ * the same ledger under a desk lamp — a warm brown-green black, not the
+ * blue-black ops uses, so the two apps stay visually distinct.
+ */
 :root {
-  color-scheme: light;
-
-  --chart-surface: #fcfcfb;
-  --chart-page-plane: #f9f9f7;
-  --chart-ink-primary: #0b0b0b;
-  --chart-ink-secondary: #52514e;
-  --chart-ink-muted: #898781;
-  --chart-gridline: #e1e0d9;
-  --chart-baseline: #c3c2b7;
-
-  --density-row-height: 3rem;
-  --density-cell-padding-x: 1rem;
-  --density-cell-padding-y: 0.75rem;
+  --radius: 0.75rem;
+  --font-display: var(--font-fraunces);
 }
 
-@theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="light"] {
+  color-scheme: light;
+
+  --background: #eef1ec;
+  --foreground: #12201a;
+  --border: #d8ded6;
+  --card: #fbfbf9;
+  --card-foreground: #12201a;
+  --muted: #e4e8e1;
+  --muted-foreground: #4b5c52;
+
+  --primary: #1f5f49; /* ink-green */
+  --primary-foreground: #fbfbf9;
+  --accent: #b4863c; /* seal-gold — the "captured" stamp only */
+  --accent-foreground: #fbfbf9;
+  --ring: #1f5f49;
+
+  --chart-surface: #fbfbf9;
+  --chart-page-plane: #eef1ec;
+  --chart-ink-primary: #12201a;
+  --chart-ink-secondary: #4b5c52;
+  --chart-ink-muted: #7c8c81;
+  --chart-gridline: #d8ded6;
+  --chart-baseline: #c3cbc0;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Ledger cover under a desk lamp — warm green-black, distinct from ops'
+   * blue-black ink so the two apps never look like reskins of each other. */
+  --background: #16201b;
+  --foreground: #e8ede7;
+  --border: #2a382f;
+  --card: #1c2820;
+  --card-foreground: #e8ede7;
+  --muted: #22302a;
+  --muted-foreground: #9bac9f;
+
+  --primary: #4fae84; /* brightened ink-green, legible on dark */
+  --primary-foreground: #0f1712;
+  --accent: #d9a85c; /* brightened seal-gold */
+  --accent-foreground: #16201b;
+  --ring: #4fae84;
+
+  --chart-surface: #1c2820;
+  --chart-page-plane: #16201b;
+  --chart-ink-primary: #e8ede7;
+  --chart-ink-secondary: #9bac9f;
+  --chart-ink-muted: #647065;
+  --chart-gridline: #2a382f;
+  --chart-baseline: #384539;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Reference codes / gateway names — the one place the portal borrows ops'
+ * mono voice, kept small and quiet rather than dominant. */
+.font-data {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
 }

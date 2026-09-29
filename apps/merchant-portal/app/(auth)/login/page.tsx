@@ -1,4 +1,6 @@
 import { connection } from "next/server";
+import { cookies } from "next/headers";
+import { THEME_COOKIE_NAME, resolveTheme } from "@payflow/ui/theme";
 import { LoginPageClient } from "./login-client";
 
 /**
@@ -9,5 +11,7 @@ import { LoginPageClient } from "./login-client";
  */
 export default async function LoginPage() {
   await connection();
-  return <LoginPageClient />;
+  const cookieStore = await cookies();
+  const theme = resolveTheme(cookieStore.get(THEME_COOKIE_NAME)?.value, "light");
+  return <LoginPageClient theme={theme} />;
 }
